@@ -11,12 +11,12 @@
   <Project>https://github.com/catapultcase/JunctionRelay</Project>
   <Overview>Unified data orchestration and IoT device management. Create Junctions to collect data from sources like Unraid, Home Assistant, and APIs, then stream it to local display panels and devices.&#xD;
 &#xD;
-NOTE: To send data to USB devices on the host machine, you may need to enable privileged mode.</Overview>
+NOTE: USB displays work without privileged mode: the device rules allow USB serial (ttyACM, ttyUSB) only, so the container cannot open disks or the TPM. Leave Privileged off.</Overview>
   <Category>HomeAutomation: Tools:Utilities</Category>
   <WebUI>http://[IP]:[PORT:7180]/</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/catapultcase/Unraid_CommunityApplications/main/JunctionRelay.xml</TemplateURL>
   <Icon>https://catapultcase.com/wp-content/uploads/2025/07/JunctionRelay-1.png</Icon>
-  <ExtraParams/>
+  <ExtraParams>--device-cgroup-rule='c 166:* rmw' --device-cgroup-rule='c 188:* rmw'</ExtraParams>
   <PostArgs/>
   <CPUset/>
   <DateInstalled>1754448767</DateInstalled>
