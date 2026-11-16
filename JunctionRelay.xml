@@ -11,7 +11,9 @@
   <Project>https://github.com/catapultcase/JunctionRelay</Project>
   <Overview>Unified data orchestration and IoT device management. Create Junctions to collect data from sources like Unraid, Home Assistant, and APIs, then stream it to local display panels and devices.&#xD;
 &#xD;
-NOTE: USB displays work without privileged mode: the device rules allow USB serial (ttyACM, ttyUSB) only, so the container cannot open disks or the TPM. Leave Privileged off.</Overview>
+NOTE: USB displays work without privileged mode: the device rules allow USB serial (ttyACM, ttyUSB) only, so the container cannot open disks or the TPM. Leave Privileged off.&#xD;
+&#xD;
+The server runs as an unprivileged user (from 0.9.2.18). At start the container prepares itself as root, then drops root: it joins the group that owns this host's serial devices and takes ownership of its data folder, so there is nothing to chown and no group to add. An install made with an older version upgrades the same way.</Overview>
   <Category>HomeAutomation: Tools:Utilities</Category>
   <WebUI>http://[IP]:[PORT:7180]/</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/catapultcase/Unraid_CommunityApplications/main/JunctionRelay.xml</TemplateURL>
@@ -23,9 +25,9 @@ NOTE: USB displays work without privileged mode: the device rules allow USB seri
   <DonateText>If you like my work please consider Donating.</DonateText>
   <DonateLink>https://buymeacoffee.com/catapultcase</DonateLink>
   <Requires/>
-  <Config Name="Access Local Devices" Target="/dev" Default="" Mode="rw" Description="" Type="Path" Display="always" Required="false" Mask="false">/dev</Config>
+  <Config Name="Access Local Devices" Target="/dev" Default="" Mode="rw" Description="Required. Keep this as /dev. It is how the server sees USB displays, and how the container reads which group owns the host's serial devices so the unprivileged server can open them. Nothing else to set for serial devices." Type="Path" Display="always" Required="false" Mask="false">/dev</Config>
   <Config Name="Host Mapping" Target="7180" Default="7180" Mode="tcp" Description="" Type="Port" Display="always" Required="false" Mask="false">7180</Config>
-  <Config Name="DB Location" Target="/app/data" Default="" Mode="rw" Description="" Type="Path" Display="always" Required="false" Mask="false">/mnt/user/appdata/junctionrelay</Config>
+  <Config Name="DB Location" Target="/app/data" Default="" Mode="rw" Description="The database, keys and uploaded content. The container takes ownership of this folder for its unprivileged user at start (uid and gid 10001 unless you add PUID and PGID variables, for example 99 and 100), so do not chown it yourself." Type="Path" Display="always" Required="false" Mask="false">/mnt/user/appdata/junctionrelay</Config>
   <Config Name="Serving SSH key" Target="/keys/serving_key" Default="" Mode="ro" Description="Optional. A private key for the serving boxes the Models page can swap. Mount it read-only - the server only runs the box's own swap script with it. Leave empty to leave serving off." Type="Path" Display="advanced" Required="false" Mask="false"></Config>
   <Config Name="Serving SSH key path" Target="JR_SERVING_SSH_KEY" Default="/keys/serving_key" Mode="" Description="Where the key lands inside the container. Unset means serving is off." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
   <Config Name="Invoice source (host)" Target="/invoices" Default="" Mode="ro" Description="Optional. A folder of invoice files the server may read when filing a purchase. Read-only on purpose - the server only ever reads from it." Type="Path" Display="advanced" Required="false" Mask="false"></Config>
